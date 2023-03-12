@@ -11,9 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
-import static java.util.Collections.reverseOrder;
-import static java.util.Comparator.comparing;
+import java.util.stream.Stream;
 
 @Service
 public class JokeService {
@@ -38,12 +36,12 @@ public class JokeService {
 
     public List<JokeModel> getJokes(long createdUnixTime) {
 
-        List<JokeEntity> entities = jokeRepo.findAll();
-        entities = entities.stream().filter(entity -> entity.getCreatedUnixTime() < createdUnixTime).toList();
-        entities = entities.stream().sorted(reverseOrder(Comparator.comparing(JokeEntity::getCreatedUnixTime))).toList();
-        entities = entities.stream().limit(2).toList();
+        Stream<JokeEntity> entities = jokeRepo.findAll().stream();
+        entities = entities.filter(entity -> entity.getCreatedUnixTime() < createdUnixTime);
+        entities = entities.sorted(Collections.reverseOrder(Comparator.comparing(JokeEntity::getCreatedUnixTime)));
+        entities = entities.limit(2);
 
-        return  entities.stream().map(e -> new JokeModel(e)).toList();
+        return  entities.map(e -> new JokeModel(e)).toList();
     }
 
 }

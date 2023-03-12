@@ -17,6 +17,10 @@ public class UserEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private List<JokeEntity> jokes;
 
+    @ManyToMany(mappedBy = "usersLiked")
+    private List<JokeEntity> likedJokes;
+    @ManyToMany(mappedBy = "usersDisliked")
+    private List<JokeEntity> dislikedJokes;
     public UserEntity() {
     }
 

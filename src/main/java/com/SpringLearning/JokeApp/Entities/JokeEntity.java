@@ -2,6 +2,8 @@ package com.SpringLearning.JokeApp.Entities;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "joke")
 public class JokeEntity {
@@ -16,6 +18,20 @@ public class JokeEntity {
     @JoinColumn (name = "author_id")
     private UserEntity user;
 
+    @ManyToMany
+    @JoinTable (
+            name = "user_joke_like",
+            joinColumns = @JoinColumn(name = "joke_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<UserEntity> usersLiked;
+    @ManyToMany
+    @JoinTable (
+            name = "user_joke_dislike",
+            joinColumns = @JoinColumn(name = "joke_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<UserEntity> usersDisliked;
     public JokeEntity() {
     }
 
@@ -50,5 +66,21 @@ public class JokeEntity {
 
     public void setUser(UserEntity user) {
         this.user = user;
+    }
+
+    public List<UserEntity> getUsersLiked() {
+        return usersLiked;
+    }
+
+    public void setUsersLiked(List<UserEntity> usersLiked) {
+        this.usersLiked = usersLiked;
+    }
+
+    public List<UserEntity> getUsersDisliked() {
+        return usersDisliked;
+    }
+
+    public void setUsersDisliked(List<UserEntity> usersDisliked) {
+        this.usersDisliked = usersDisliked;
     }
 }

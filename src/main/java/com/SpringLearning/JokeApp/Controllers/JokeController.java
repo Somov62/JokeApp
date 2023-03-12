@@ -28,4 +28,6 @@ public class JokeController {
             return  ResponseEntity.ok(jokeService.getJokes(0));
         return  ResponseEntity.ok(jokeService.getJokes(lastReceivedModelId.get()));
     }
+
+
 }

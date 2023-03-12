@@ -12,6 +12,13 @@ public class UserModel {
     public UserModel() {
     }
 
+    public UserModel(UserEntity entity) {
+        this.id = entity.getId();
+        this.firstName = entity.getFirstName();
+        this.lastName = entity.getLastName();
+        this.login = entity.getLogin();
+    }
+
     public long getId() {
         return id;
     }
@@ -44,10 +51,5 @@ public class UserModel {
         this.lastName = lastName;
     }
 
-    public UserModel(UserEntity entity) {
-        this.id = entity.getId();
-        this.firstName = entity.getFirstName();
-        this.lastName = entity.getLastName();
-        this.login = entity.getLogin();
-    }
+
 }
