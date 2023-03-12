@@ -1,7 +1,7 @@
 package com.SpringLearning.JokeApp.Services;
 
 import com.SpringLearning.JokeApp.Entities.JokeEntity;
-import com.SpringLearning.JokeApp.Entities.UserEntity;
+import com.SpringLearning.JokeApp.Exceptions.UserNotFoundException;
 import com.SpringLearning.JokeApp.Models.JokeModel;
 import com.SpringLearning.JokeApp.Repos.JokeRepo;
 import com.SpringLearning.JokeApp.Repos.UserRepo;
@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @Service
@@ -20,28 +21,50 @@ public class JokeService {
     private JokeRepo jokeRepo;
     @Autowired
     private UserRepo userRepo;
-    public JokeModel publishJoke(JokeModel joke) {
+    public JokeModel publishJoke(JokeModel joke) throws UserNotFoundException {
+
+        if (joke.getJoke() == null || joke.getJoke().trim().isEmpty())
+            throw new IllegalArgumentException("Анекдот не может быть пустым");
+        if (joke.getUser() == null)
+            throw new IllegalArgumentException("Укажите автора анекдота");
+
+        var user = userRepo.findById(joke.getUser().getId());
+        if (user.isEmpty())
+            throw new UserNotFoundException("Автор не найден");
+
 
         JokeEntity entity = new JokeEntity();
-        entity.setId(joke.getId());
         entity.setJoke(joke.getJoke());
         entity.setCreatedUnixTime(System.currentTimeMillis() / 1000L);
-
-        UserEntity user = userRepo.findById(joke.getUser().getId()).orElseThrow();
-        entity.setUser(user);
+        entity.setUser(user.get());
 
         jokeRepo.save(entity);
         return new JokeModel(entity);
     }
 
-    public List<JokeModel> getJokes(long createdUnixTime) {
-
+    public List<JokeModel> getJokes(Long lastReceivedSortedFieldValue, String sortByField) {
         Stream<JokeEntity> entities = jokeRepo.findAll().stream();
-        entities = entities.filter(entity -> entity.getCreatedUnixTime() < createdUnixTime);
-        entities = entities.sorted(Collections.reverseOrder(Comparator.comparing(JokeEntity::getCreatedUnixTime)));
-        entities = entities.limit(2);
 
-        return  entities.map(e -> new JokeModel(e)).toList();
+        switch (sortByField) {
+            case "likesCount" -> {
+                long likesCount = lastReceivedSortedFieldValue;
+                entities = entities.filter(entity -> entity.getCountLikes() < likesCount);
+                entities = entities.sorted(Collections.reverseOrder(Comparator.comparing(JokeEntity::getCountLikes)));
+            }
+            case "dislikesCount" -> {
+                long dislikesCount = lastReceivedSortedFieldValue;
+                entities = entities.filter(entity -> entity.getCountDislikes() < dislikesCount);
+                entities = entities.sorted(Collections.reverseOrder(Comparator.comparing(JokeEntity::getCountDislikes)));
+            }
+            default -> {
+                long createdUnixTime = lastReceivedSortedFieldValue;
+                entities = entities.filter(entity -> entity.getCreatedUnixTime() < createdUnixTime);
+                entities = entities.sorted(Collections.reverseOrder(Comparator.comparing(JokeEntity::getCreatedUnixTime)));
+            }
+        }
+
+        entities = entities.limit(10);
+        return  entities.map(JokeModel::new).toList();
     }
 
 }

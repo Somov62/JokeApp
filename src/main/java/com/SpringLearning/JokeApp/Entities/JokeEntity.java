@@ -35,6 +35,12 @@ public class JokeEntity {
     public JokeEntity() {
     }
 
+    public long getCountLikes() {
+        return usersLiked.stream().count();
+    }
+    public long getCountDislikes() {
+        return usersDisliked.stream().count();
+    }
     public long getId() {
         return id;
     }

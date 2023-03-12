@@ -19,6 +19,8 @@ public class RateJokeService {
     public long setLike (long userId, long jokeId) {
         JokeEntity joke = jokeRepo.findById(jokeId).orElseThrow();
         UserEntity user = userRepo.findById(userId).orElseThrow();
+        if (joke.getUsersDisliked().contains(user))
+            joke.getUsersDisliked().remove(user);
         if (joke.getUsersLiked().contains(user))
             joke.getUsersLiked().remove(user);
         else
@@ -30,6 +32,8 @@ public class RateJokeService {
     public long setDislike (long userId, long jokeId) {
         JokeEntity joke = jokeRepo.findById(jokeId).orElseThrow();
         UserEntity user = userRepo.findById(userId).orElseThrow();
+        if (joke.getUsersLiked().contains(user))
+            joke.getUsersLiked().remove(user);
         if (joke.getUsersDisliked().contains(user))
             joke.getUsersDisliked().remove(user);
         else

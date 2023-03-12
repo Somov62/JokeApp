@@ -1,6 +1,7 @@
 package com.SpringLearning.JokeApp.Services;
 
 import com.SpringLearning.JokeApp.Entities.UserEntity;
+import com.SpringLearning.JokeApp.Exceptions.UserAlreadyExistsException;
 import com.SpringLearning.JokeApp.Models.UserModel;
 import com.SpringLearning.JokeApp.Repos.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +13,17 @@ public class UserService {
     @Autowired
     private UserRepo userRepo;
 
-    public UserModel registration(UserModel user) {
+    public UserModel registration(UserModel user) throws UserAlreadyExistsException {
+
+        if (user.getLogin() == null || user.getLogin().trim().isEmpty())
+            throw new IllegalArgumentException("Логин не может быть пустым");
+
+        if (userRepo.findByLogin(user.getLogin()) != null)
+            throw new UserAlreadyExistsException("Пользователь с именем " + user.getLogin() + " уже существует");
+
         UserEntity entity = new UserEntity();
-        entity.setId(user.getId());
-        entity.setFirstName(user.getFirstName());
         entity.setLogin(user.getLogin());
+        entity.setFirstName(user.getFirstName());
         entity.setLastName(user.getLastName());
 
         userRepo.save(entity);

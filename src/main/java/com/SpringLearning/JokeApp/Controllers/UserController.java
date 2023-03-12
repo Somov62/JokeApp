@@ -1,8 +1,8 @@
 package com.SpringLearning.JokeApp.Controllers;
 
 
+import com.SpringLearning.JokeApp.Exceptions.UserAlreadyExistsException;
 import com.SpringLearning.JokeApp.Models.UserModel;
-import com.SpringLearning.JokeApp.Services.RateJokeService;
 import com.SpringLearning.JokeApp.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +16,14 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    public ResponseEntity<UserModel> registration(@RequestBody UserModel user) {
-        var newUser = userService.registration(user);
-        return ResponseEntity.ok(newUser);
+    public ResponseEntity registration(@RequestBody UserModel user) {
+
+        try {
+             UserModel newUser = userService.registration(user);
+            return ResponseEntity.ok(newUser);
+        } catch (UserAlreadyExistsException | IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 
