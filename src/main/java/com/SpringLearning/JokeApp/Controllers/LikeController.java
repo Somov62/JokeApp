@@ -13,14 +13,18 @@ public class LikeController {
     private RateJokeService rateService;
 
 
-    @GetMapping("/{userId}/setLike")
-    public ResponseEntity<Long> setLike(@PathVariable long userId, @RequestParam long jokeId ) {
+    @GetMapping("/setLike")
+    public ResponseEntity<Long> setLike(
+            @RequestParam(name = "userId") long userId,
+            @RequestParam(name = "jokeId") long jokeId ) {
         long countLikes = rateService.setLike(userId, jokeId);
         return  ResponseEntity.ok(countLikes);
     }
 
-    @GetMapping("/{userId}/setDislike")
-    public ResponseEntity<Long> setDislike(@PathVariable long userId, @RequestParam long jokeId ) {
+    @GetMapping("/setDislike")
+    public ResponseEntity<Long> setDislike(
+            @RequestParam(name = "userId") long userId,
+            @RequestParam(name = "jokeId") long jokeId ) {
         long countLikes = rateService.setDislike(userId, jokeId);
         return  ResponseEntity.ok(countLikes);
     }
