@@ -11,8 +11,10 @@ public class JokeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column(nullable = false)
+    @Column(name = "joke", nullable = false)
     private String joke;
+
+    @Column(name = "created_unix_time")
     private long createdUnixTime;
     @ManyToOne
     @JoinColumn (name = "author_id")
