@@ -45,13 +45,13 @@ public class JokeService {
     public List<JokeModel> getJokes(Long lastReceivedSortedFieldValue, String sortByField) {
         Stream<JokeEntity> entities = jokeRepo.findAll().stream();
 
-        switch (sortByField) {
-            case "likesCount" -> {
+        switch (sortByField.toLowerCase()) {
+            case "likescount" -> {
                 long likesCount = lastReceivedSortedFieldValue;
                 entities = entities.filter(entity -> entity.getCountLikes() < likesCount);
                 entities = entities.sorted(Collections.reverseOrder(Comparator.comparing(JokeEntity::getCountLikes)));
             }
-            case "dislikesCount" -> {
+            case "dislikescount" -> {
                 long dislikesCount = lastReceivedSortedFieldValue;
                 entities = entities.filter(entity -> entity.getCountDislikes() < dislikesCount);
                 entities = entities.sorted(Collections.reverseOrder(Comparator.comparing(JokeEntity::getCountDislikes)));
